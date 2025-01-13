@@ -1,0 +1,16 @@
+dev.wwr.icu {
+    tls me@wwr.icu
+    handle_path /api* {
+        reverse_proxy {
+            to basic-service:8000
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    handle / {
+        reverse_proxy localhost:8000
+    }
+}

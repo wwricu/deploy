@@ -1,0 +1,6 @@
+*.sql
+*.gz
+*.zip
+*.bak
+*.log
+*.iml

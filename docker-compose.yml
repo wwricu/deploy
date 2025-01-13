@@ -1,0 +1,27 @@
+version: "3.3"
+services:
+  caddy:
+    container_name: caddy
+    image: caddy:alpine
+    restart: always
+    volumes:
+      - ./caddy/data:/data
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+    ports:
+      - "443:443"
+      - "80:80"
+    networks:
+      - default_network
+  basic-service:
+    container_name: basic-service
+    image: wwricu/basic-service
+    restart: always
+    expose:
+      - "8000"
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    networks:
+      - default_network
+networks:
+  default_network:
