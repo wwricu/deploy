@@ -1,5 +1,6 @@
 dev.wwr.icu {
     tls me@wwr.icu
+
     handle_path /api* {
         reverse_proxy {
             to basic-service:8000
@@ -10,7 +11,8 @@ dev.wwr.icu {
         }
     }
 
-    handle / {
-        reverse_proxy localhost:8000
+    handle_path /admin* {
+        root * /admin-page
+        file_server
     }
 }

@@ -5,8 +5,10 @@ services:
     image: caddy:alpine
     restart: always
     volumes:
-      - ./caddy/data:/data
+      - /persist/caddy:/data
       - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - /admin-page:/admin-page
+    # download artifact to /admin
     ports:
       - "443:443"
       - "80:80"
@@ -21,6 +23,8 @@ services:
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - /persist/basic:/data
     networks:
       - default_network
 networks:

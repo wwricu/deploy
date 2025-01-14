@@ -12,12 +12,15 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             rm -rf /deploy
+            rm -rf /admin-page
             mkdir /deploy
+            mkdir /admin-page
       - uses: actions/checkout@v4
       - run: |
           echo AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> .env
           echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env
           echo ENV=dev >> .env
+          wget https://github.com/wwricu/admin-page/releases/download/dev/dist.tar.gz
       - uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.DEV_HOSTNAME }}
@@ -27,6 +30,15 @@ jobs:
           source: "."
           target: "/deploy"
           overwrite: true
+      - uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEV_HOSTNAME }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.DEPLOY_KEY }}
+          port: 22
+          source: "dist.tar.gz"
+          target: "/admin-page"
+          overwrite: true
       - uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.DEV_HOSTNAME }}
@@ -35,5 +47,7 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             docker rm -f $(docker ps -aq)
+            cd /admin-page
+            tar -xzf dist.tar.gz
             cd /deploy
             docker-compose up -d
