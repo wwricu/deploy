@@ -1,5 +1,9 @@
 name: Deploy dev
 on:
+  push:
+    branches:
+      - master
+      - dev
   workflow_dispatch:
 jobs:
   deploy:
@@ -47,7 +51,8 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             docker rm -f $(docker ps -aq)
+            docker rmi wwricu/basic-service:dev
             cd /admin-page
             tar -xzf dist.tar.gz
             cd /deploy
-            docker-compose up -d
+            docker-compose -f docker-compose-dev.yml up -d
