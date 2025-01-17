@@ -1,5 +1,6 @@
 dev.wwr.icu {
     tls me@wwr.icu
+    encode gzip
 
     handle_path /api* {
         reverse_proxy {
@@ -14,5 +15,6 @@ dev.wwr.icu {
     handle_path /admin* {
         root * /admin-page
         file_server
+        try_files {path} {path}/ /index.html
     }
 }

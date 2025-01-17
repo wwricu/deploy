@@ -30,7 +30,6 @@ jobs:
           host: ${{ secrets.DEV_HOSTNAME }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.DEPLOY_KEY }}
-          port: 22
           source: "."
           target: "/deploy"
           overwrite: true
@@ -39,7 +38,6 @@ jobs:
           host: ${{ secrets.DEV_HOSTNAME }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.DEPLOY_KEY }}
-          port: 22
           source: "dist.tar.gz"
           target: "/admin-page"
           overwrite: true
@@ -47,7 +45,6 @@ jobs:
         with:
           host: ${{ secrets.DEV_HOSTNAME }}
           username: ${{ secrets.SSH_USERNAME }}
-          port: 22
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             docker rm -f $(docker ps -aq)
