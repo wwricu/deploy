@@ -48,7 +48,8 @@ jobs:
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
             docker rm -f $(docker ps -aq)
-            docker rmi wwricu/basic-service:dev
+            docker rmi wwricu/basic-service:snapshot
+            docker rmi wwricu/blog-page:snapshot
             cd /admin-page
             tar -xzf dist.tar.gz
             cd /deploy

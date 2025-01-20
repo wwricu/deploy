@@ -16,7 +16,7 @@ services:
       - default_network
   basic-service:
     container_name: basic-service
-    image: wwricu/basic-service
+    image: wwricu/basic-service:latest
     restart: always
     expose:
       - "8000"
@@ -25,6 +25,14 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     volumes:
       - /persist/basic:/data
+    networks:
+      - default_network
+  blog-page:
+    container_name: blog-page
+    image: wwricu/blog-page:latest
+    restart: always
+    expose:
+      - "3000"
     networks:
       - default_network
 networks:
