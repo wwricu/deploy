@@ -4,7 +4,7 @@ dev.wwr.icu {
 
     handle_path /api* {
         reverse_proxy {
-            to basic-service:8000
+            to http://basic-service:8000
             header_up Host {host}
             header_up X-Real-IP {remote}
             header_up X-Forwarded-For {remote}
@@ -16,5 +16,15 @@ dev.wwr.icu {
         root * /admin-page
         file_server
         try_files {path} {path}/ /index.html
+    }
+
+    handle_path /* {
+        reverse_proxy {
+            to http://blog-page:3000
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+            header_up X-Forwarded-For {remote}
+            header_up X-Forwarded-Proto {scheme}
+        }
     }
 }
