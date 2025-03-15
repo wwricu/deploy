@@ -2,13 +2,19 @@ dev.wwr.icu {
     tls me@wwr.icu
     encode gzip
 
+    handle /gp* {
+        reverse_proxy {
+            to http://v2ray:8443
+            header_up Host {host}
+            header_up X-Real-IP {remote}
+        }
+    }
+
     handle_path /api* {
         reverse_proxy {
             to http://basic-service:8000
             header_up Host {host}
             header_up X-Real-IP {remote}
-            header_up X-Forwarded-For {remote}
-            header_up X-Forwarded-Proto {scheme}
         }
     }
 
@@ -23,8 +29,6 @@ dev.wwr.icu {
             to http://blog-page:3000
             header_up Host {host}
             header_up X-Real-IP {remote}
-            header_up X-Forwarded-For {remote}
-            header_up X-Forwarded-Proto {scheme}
         }
     }
 }
