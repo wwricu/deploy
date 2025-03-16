@@ -32,6 +32,8 @@ services:
     restart: always
     expose:
       - "3000"
+    environment:
+      - NEXT_BASE_URL=http://basic-service:8000
     networks:
       - default_network
   v2ray:
