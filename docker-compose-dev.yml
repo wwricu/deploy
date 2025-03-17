@@ -2,12 +2,10 @@ version: "3.3"
 services:
   caddy:
     container_name: caddy
-    image: caddy:alpine
+    image: wwricu/admin-page:snapshot
     restart: always
     volumes:
-      - /persist/caddy:/data
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
-      - /admin-page:/admin-page
+      - /data/caddy:/data/caddy
     ports:
       - "443:443"
       - "80:80"
@@ -23,7 +21,7 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     volumes:
-      - /persist/basic:/data
+      - /data/basic:/data
     networks:
       - default_network
   blog-page:
@@ -44,7 +42,7 @@ services:
       - "8443"
     volumes:
       - ./v2ray/config.json:/etc/v2ray/config.json
-      - /persist/v2ray/log:/var/log/v2ray
+      - /data/v2ray/log:/var/log/v2ray
     command: run -config /etc/v2ray/config.json
     networks:
       - default_network
