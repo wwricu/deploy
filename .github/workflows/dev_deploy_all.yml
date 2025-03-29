@@ -1,9 +1,5 @@
 name: Deploy dev
 on:
-  push:
-    branches:
-      - master
-      - dev
   workflow_dispatch:
 jobs:
   deploy:
