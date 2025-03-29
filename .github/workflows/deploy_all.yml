@@ -46,6 +46,7 @@ jobs:
           script: |
             docker rm -f $(docker ps -aq)
             docker rmi wwricu/basic-service:latest
+            docker rmi wwricu/admin-page:latest
             docker rmi wwricu/blog-page:latest
             cd /data/deploy
-            docker-compose -f docker-compose-dev.yml up -d
+            docker-compose -f docker-compose.yml up -d

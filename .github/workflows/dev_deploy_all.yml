@@ -46,6 +46,7 @@ jobs:
           script: |
             docker rm -f $(docker ps -aq)
             docker rmi wwricu/basic-service:snapshot
+            docker rmi wwricu/admin-page:snapshot
             docker rmi wwricu/blog-page:snapshot
             cd /data/deploy
             docker-compose -f docker-compose-dev.yml up -d
