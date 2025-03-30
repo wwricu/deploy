@@ -1,4 +1,4 @@
-name: Deploy all
+name: Deploy basic-service
 on:
   workflow_dispatch:
 jobs:
@@ -19,9 +19,7 @@ jobs:
       - run: |
           echo AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }} >> .env
           echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env
-          echo ENV=dev >> .env
           sed -i "s/{V2RAY_UID}/${{ secrets.V2RAY_UID }}/g" v2ray/config.json
-          wget https://github.com/wwricu/admin-page/releases/latest/download/dist.tar.gz
       - uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOSTNAME }}
@@ -30,23 +28,14 @@ jobs:
           source: "."
           target: "/data/deploy"
           overwrite: true
-      - uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOSTNAME }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.DEPLOY_KEY }}
-          source: "dist.tar.gz"
-          target: "/data/admin"
-          overwrite: true
       - uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.HOSTNAME }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.DEPLOY_KEY }}
           script: |
-            docker rm -f $(docker ps -aq)
+            docker stop basic-service
+            docker rm basic-service
             docker rmi wwricu/basic-service:latest
-            docker rmi wwricu/admin-page:latest
-            docker rmi wwricu/blog-page:latest
             cd /data/deploy
             docker-compose -f docker-compose.yml up -d
