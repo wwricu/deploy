@@ -1,4 +1,4 @@
-name: Deploy basic-service
+name: Deploy admin
 on:
   workflow_dispatch:
 jobs:
