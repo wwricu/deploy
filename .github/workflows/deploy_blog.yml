@@ -9,7 +9,7 @@ jobs:
         with:
           host: ${{ secrets.HOSTNAME }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.DEPLOY_KEY }}
+          key: ${{ secrets.PRIVATE_KEY }}
           script: |
             mkdir /data
             mkdir /data/v2ray
@@ -24,7 +24,7 @@ jobs:
         with:
           host: ${{ secrets.HOSTNAME }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.DEPLOY_KEY }}
+          key: ${{ secrets.PRIVATE_KEY }}
           source: "."
           target: "/data/deploy"
           overwrite: true
@@ -32,7 +32,7 @@ jobs:
         with:
           host: ${{ secrets.HOSTNAME }}
           username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.DEPLOY_KEY }}
+          key: ${{ secrets.PRIVATE_KEY }}
           script: |
             docker stop blog-page
             docker rm blog-page

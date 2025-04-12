@@ -9,7 +9,7 @@ jobs:
         with:
           host: ${{ secrets.DEV_HOSTNAME }}
           username: ${{ secrets.DEV_USERNAME }}
-          key: ${{ secrets.DEPLOY_KEY }}
+          key: ${{ secrets.PRIVATE_KEY }}
           script: |
             mkdir /data
             mkdir /data/v2ray
@@ -26,7 +26,7 @@ jobs:
         with:
           host: ${{ secrets.DEV_HOSTNAME }}
           username: ${{ secrets.DEV_USERNAME }}
-          key: ${{ secrets.DEPLOY_KEY }}
+          key: ${{ secrets.PRIVATE_KEY }}
           source: "."
           target: "/data/deploy"
           overwrite: true
@@ -34,7 +34,7 @@ jobs:
         with:
           host: ${{ secrets.DEV_HOSTNAME }}
           username: ${{ secrets.DEV_USERNAME }}
-          key: ${{ secrets.DEPLOY_KEY }}
+          key: ${{ secrets.PRIVATE_KEY }}
           source: "dist.tar.gz"
           target: "/data/admin"
           overwrite: true
@@ -42,7 +42,7 @@ jobs:
         with:
           host: ${{ secrets.DEV_HOSTNAME }}
           username: ${{ secrets.DEV_USERNAME }}
-          key: ${{ secrets.DEPLOY_KEY }}
+          key: ${{ secrets.PRIVATE_KEY }}
           script: |
             docker rm -f $(docker ps -aq)
             docker rmi wwricu/basic-service:snapshot
