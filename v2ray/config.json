@@ -12,7 +12,7 @@
       "settings": {
         "clients": [
           {
-            "id": "{V2RAY_UID}",
+            "id": "{V2RAY_UUID}",
             "level": 1,
             "alterId": 0
           }
