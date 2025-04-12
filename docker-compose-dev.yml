@@ -6,6 +6,9 @@ services:
     restart: always
     volumes:
       - /data/caddy:/data/caddy
+    environment:
+      - HOSTNAME=${HOSTNAME}
+      - DIRECT_HOSTNAME=${DIRECT_HOSTNAME}
     ports:
       - "443:443"
       - "80:80"
