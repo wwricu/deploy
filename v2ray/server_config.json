@@ -2,11 +2,11 @@
   "log": {
     "error": "/var/log/v2ray/error.log",
     "access": "/var/log/v2ray/access.log",
-    "loglevel": "error"
+    "loglevel": "info"
   },
   "inbounds": [
     {
-      "port": 8443,
+      "port": 443,
       "listen": "0.0.0.0",
       "protocol": "vmess",
       "settings": {
@@ -17,33 +17,12 @@
             "alterId": 0
           }
         ]
-      },
-      "streamSettings": {
-        "network": "ws",
-        "wsSettings": {
-          "path": "/gp"
-        }
       }
     }
   ],
   "outbounds": [
     {
       "protocol": "freedom"
-    },
-    {
-      "protocol": "blackhole",
-      "tag": "blocked"
     }
-  ],
-  "routing": {
-    "rules": [
-      {
-        "type": "field",
-        "ip": [
-          "geoip:private"
-        ],
-        "outboundTag": "blocked"
-      }
-    ]
-  }
+  ]
 }
