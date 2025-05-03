@@ -17,7 +17,7 @@ services:
   basic-service:
     container_name: basic-service
     image: wwricu/basic-service:snapshot
-    restart: always
+    restart: on-failure:3
     expose:
       - "8000"
     environment:
