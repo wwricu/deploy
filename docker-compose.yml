@@ -23,9 +23,8 @@ services:
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - LOG_PATH=${LOG_PATH:-logs}
     volumes:
-      - /data/basic/${LOG_PATH:-logs}:/data/${LOG_PATH:-logs}
+      - /data/basic:/data
     networks:
       - default_network
   blog-page:
