@@ -44,7 +44,7 @@ services:
     expose:
       - "8443"
     volumes:
-      - ./v2ray/config.json:/etc/v2ray/config.json
+      - /data/v2ray/config.json:/etc/v2ray/config.json
       - /data/v2ray/log:/var/log/v2ray
     command: run -config /etc/v2ray/config.json
     networks:
