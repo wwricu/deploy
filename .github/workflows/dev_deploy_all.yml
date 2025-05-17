@@ -45,9 +45,10 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
+            docker pull wwricu/basic-service:snapshot
+            docker pull wwricu/admin-page:snapshot
+            docker pull wwricu/blog-page:snapshot
             docker rm -f $(docker ps -aq)
-            docker rmi wwricu/basic-service:snapshot
-            docker rmi wwricu/admin-page:snapshot
-            docker rmi wwricu/blog-page:snapshot
             cd /data/deploy
             docker-compose -f docker-compose-dev.yml up -d
+            docker image prune -f
