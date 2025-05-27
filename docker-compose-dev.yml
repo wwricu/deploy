@@ -5,7 +5,8 @@ services:
     image: wwricu/admin-page:snapshot
     restart: always
     volumes:
-      - /data/caddy:/data/caddy
+      - /data/caddy/data:/data/caddy
+      - /data/caddy/log:/var/log
     environment:
       - HOSTNAME=${HOSTNAME}
       - ADMIN_HOSTNAME=${ADMIN_HOSTNAME}
