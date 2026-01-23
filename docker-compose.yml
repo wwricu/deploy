@@ -56,7 +56,7 @@ services:
     expose:
       - 8443
     volumes:
-      - /data/bad_proxy/config.json:/etc/bad_proxy/config.json
+      - /data/deploy/bad_proxy/config.json:/etc/bad_proxy/config.json
     networks:
       - default_network
 networks:
