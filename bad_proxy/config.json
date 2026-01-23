@@ -1,0 +1,25 @@
+{
+  "inbounds": [
+    {
+      "protocol": "trojan",
+      "secret": "{TROJAN_UUID}",
+      "host": "0.0.0.0",
+      "port": "8443",
+      "transmit": "ws",
+      "ws_path": "/bp"
+    },
+    {
+      "protocol": "btp",
+      "secret": "{BTP_UUID}",
+      "host": "0.0.0.0",
+      "port": "8444",
+      "transmit": "ws",
+      "ws_path": "/btp"
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "freedom"
+    }
+  ]
+}
