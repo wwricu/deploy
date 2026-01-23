@@ -20,7 +20,7 @@ services:
     image: wwricu/basic-service:latest
     restart: on-failure:3
     expose:
-      - "8000"
+      - 8000
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
@@ -33,7 +33,7 @@ services:
     image: wwricu/blog-page:latest
     restart: always
     expose:
-      - "3000"
+      - 3000
     environment:
       - NEXT_BASE_URL=http://basic-service:8000
     networks:
@@ -43,7 +43,7 @@ services:
     image: v2fly/v2fly-core:latest
     restart: always
     expose:
-      - "8443"
+      - 8443
     volumes:
       - /data/v2ray/config.json:/etc/v2ray/config.json
       - /data/v2ray/log:/var/log/v2ray
@@ -55,7 +55,7 @@ services:
     image: wwricu/bad-proxy-core:latest
     restart: always
     expose:
-      - "8443"
+      - 8443
     volumes:
       - /data/bad_proxy/config.json:/etc/bad_proxy/config.json
     networks:

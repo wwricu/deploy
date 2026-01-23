@@ -1,0 +1,17 @@
+version: "3.3"
+services:
+  caddy:
+    container_name: caddy
+    image: wwricu/admin-page:snapshot
+    restart: always
+    volumes:
+      - /data/caddy/data:/data/caddy
+      - /data/caddy/log:/var/log
+    environment:
+      - HOSTNAME=${HOSTNAME}
+      - ADMIN_HOSTNAME=${ADMIN_HOSTNAME}
+    ports:
+      - "443:443"
+      - "80:80"
+    networks:
+      - default_network

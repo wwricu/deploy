@@ -1,0 +1,15 @@
+version: "3.3"
+services:
+  basic-service:
+    container_name: basic-service
+    image: wwricu/basic-service:snapshot
+    restart: on-failure:3
+    expose:
+      - 8000
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    volumes:
+      - /data/basic-service:/data
+    networks:
+      - default_network
