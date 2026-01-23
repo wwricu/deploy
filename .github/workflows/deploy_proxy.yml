@@ -3,10 +3,11 @@ on:
   workflow_dispatch:
 jobs:
   reset:
-    uses: ./.github/workflows/reset_deploy.yml
+    uses: ./.github/workflows/clean_deploy.yml
     secrets: inherit
   deploy:
     runs-on: ubuntu-latest
+    needs: reset
     steps:
       - uses: appleboy/ssh-action@master
         with:

@@ -1,4 +1,4 @@
-name: reset_deploy.yml
+name: Clean deploy
 on:
   workflow_call:
     secrets:
@@ -28,6 +28,7 @@ jobs:
           script: |
             mkdir /data
             mkdir /data/v2ray
+            mkdir /data/bad_proxy
             rm -rf /data/deploy
             mkdir /data/deploy
       - uses: actions/checkout@v4
@@ -37,6 +38,8 @@ jobs:
           echo HOSTNAME=${{ secrets.HOSTNAME }} >> .env
           echo ADMIN_HOSTNAME=${{ secrets.ADMIN_HOSTNAME }} >> .env
           sed -i "s/{V2RAY_UUID}/${{ secrets.V2RAY_UUID }}/g" v2ray/config.json
+          sed -i "s/{TROJAN_UUID}/${{ secrets.V2RAY_UUID }}/g" bad_proxy/config.json
+          sed -i "s/{BTP_UUID}/${{ secrets.V2RAY_UUID }}/g" bad_proxy/config.json
       - uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.ADMIN_HOSTNAME }}
