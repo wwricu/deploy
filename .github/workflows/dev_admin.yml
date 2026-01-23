@@ -1,4 +1,4 @@
-name: Deploy admin
+name: Dev admin snapshot
 on:
   workflow_dispatch:
 jobs:
@@ -14,9 +14,9 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            docker pull wwricu/admin-page:latest
+            docker pull wwricu/admin-page:snapshot
             docker stop caddy
             docker rm caddy
             cd /data/deploy
-            docker-compose -f docker-compose.yml up -d
+            docker-compose -f docker-compose.yml -f docker-compose.admin.dev.yml up -d
             docker image prune -f

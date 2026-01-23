@@ -1,6 +1,21 @@
-name: Deploy snapshot
+name: reset_deploy.yml
 on:
-  workflow_dispatch:
+  workflow_call:
+    secrets:
+      HOSTNAME:
+        required: true
+      ADMIN_HOSTNAME:
+        required: true
+      USERNAME:
+        required: true
+      PRIVATE_KEY:
+        required: true
+      V2RAY_UUID:
+        required: true
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -30,17 +45,3 @@ jobs:
           source: "."
           target: "/data/deploy"
           overwrite: true
-      - uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.ADMIN_HOSTNAME }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.PRIVATE_KEY }}
-          script: |
-            docker pull wwricu/basic-service:snapshot
-            docker pull wwricu/admin-page:snapshot
-            docker pull wwricu/blog-page:snapshot
-            docker stop $(docker ps -aq)
-            docker rm $(docker ps -aq)
-            cd /data/deploy
-            docker-compose -f docker-compose-dev.yml up -d
-            docker image prune -f

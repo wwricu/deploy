@@ -1,0 +1,11 @@
+services:
+  bad_proxy:
+    container_name: bad_proxy
+    image: wwricu/bad-proxy-core:snapshot
+    restart: always
+    expose:
+      - 8443
+    volumes:
+      - /data/bad_proxy/config.json:/etc/bad_proxy/config.json
+    networks:
+      - default_network
