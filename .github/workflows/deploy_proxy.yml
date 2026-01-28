@@ -19,5 +19,5 @@ jobs:
             docker stop bad_proxy
             docker rm bad_proxy
             cd /data/deploy
-            docker-compose -f docker-compose.yml up -d
+            docker-compose -f docker-compose.yml up -d bad_proxy
             docker image prune -f

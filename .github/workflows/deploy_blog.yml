@@ -19,5 +19,5 @@ jobs:
             docker stop blog-page
             docker rm blog-page
             cd /data/deploy
-            docker-compose -f docker-compose.yml up -d
+            docker-compose -f docker-compose.yml up -d blog-page
             docker image prune -f

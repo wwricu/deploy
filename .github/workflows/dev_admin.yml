@@ -19,5 +19,5 @@ jobs:
             docker stop caddy
             docker rm caddy
             cd /data/deploy
-            docker-compose -f docker-compose.yml -f docker-compose.admin.dev.yml up -d
+            docker-compose -f docker-compose.yml -f docker-compose.admin.dev.yml up -d caddy
             docker image prune -f
