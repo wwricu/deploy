@@ -1,6 +1,8 @@
 name: Deploy basic-service
 on:
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   reset:
     uses: ./.github/workflows/clean_deploy.yml

@@ -16,6 +16,8 @@ on:
         required: true
       AWS_SECRET_ACCESS_KEY:
         required: true
+permissions:
+  contents: read
 jobs:
   deploy:
     runs-on: ubuntu-latest

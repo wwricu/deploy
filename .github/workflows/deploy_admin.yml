@@ -1,11 +1,14 @@
 name: Deploy admin
 on:
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   reset:
     uses: ./.github/workflows/clean_deploy.yml
     secrets: inherit
   deploy:
+
     runs-on: ubuntu-latest
     needs: reset
     steps:
