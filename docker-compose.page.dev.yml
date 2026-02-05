@@ -7,5 +7,6 @@ services:
       - 3000
     environment:
       - NEXT_BASE_URL=http://basic-service:8000
+      - NEXT_SITE_URL=https://${HOSTNAME}
     networks:
       - default_network
