@@ -1,6 +1,8 @@
 name: Dev basic-service snapshot
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [ deploy-service-dev ]
 permissions:
   contents: read
 jobs:

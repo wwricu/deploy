@@ -1,6 +1,8 @@
 name: Deploy admin
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [ deploy-admin-release ]
 permissions:
   contents: read
 jobs:

@@ -1,6 +1,8 @@
 name: Dev blog snapshot
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [ deploy-blog-dev ]
 permissions:
   contents: read
 jobs:
