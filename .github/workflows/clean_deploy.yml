@@ -37,6 +37,7 @@ jobs:
           echo AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }} >> .env
           echo HOSTNAME=${{ secrets.HOSTNAME }} >> .env
           echo ADMIN_HOSTNAME=${{ secrets.ADMIN_HOSTNAME }} >> .env
+          echo RESOURCE_HOSTNAME=${{ secrets.RESOURCE_HOSTNAME }} >> .env
           sed -i "s/{V2RAY_UUID}/${{ secrets.V2RAY_UUID }}/g" v2ray/config.json
           sed -i "s/{TROJAN_UUID}/${{ secrets.V2RAY_UUID }}/g" bad_proxy/config.json
           sed -i "s/{BTP_UUID}/${{ secrets.V2RAY_UUID }}/g" bad_proxy/config.json
