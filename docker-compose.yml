@@ -37,8 +37,8 @@ services:
     environment:
       - NEXT_BASE_URL=http://basic-service:8000
       - NEXT_SITE_URL=https://${HOSTNAME}
-      - NEXT_API_KEY_ID=${NEXT_API_KEY_ID}
-      - NEXT_API_KEY=${NEXT_API_KEY}
+      - NEXT_API_KEY_ID=${PAGE_API_KEY_ID}
+      - NEXT_API_KEY=${PAGE_API_KEY_ID}
     networks:
       - default_network
   v2ray:
