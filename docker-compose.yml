@@ -59,6 +59,7 @@ services:
     restart: always
     expose:
       - 8443
+      - 8444
     volumes:
       - /data/deploy/bad_proxy/config.json:/etc/bad_proxy/config.json
     networks:
