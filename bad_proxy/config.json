@@ -5,16 +5,14 @@
       "users": ["{TROJAN_UUID}"],
       "host": "0.0.0.0",
       "port": "8443",
-      "transport": "xhttp",
-      "path": "/bp"
+      "transport": { "type": "xhttp", "path": "/bp" }
     },
     {
       "protocol": "btp",
       "secret": "{BTP_UUID}",
       "host": "0.0.0.0",
       "port": "8444",
-      "transport": "xhttp",
-      "path": "/btp"
+      "transport": { "type": "xhttp", "path": "/btp" }
     }
   ],
   "outbounds": [
