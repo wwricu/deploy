@@ -4,20 +4,17 @@
       "protocol": "vless",
       "users": ["{TROJAN_UUID}"],
       "host": "0.0.0.0",
-      "port": "8447",
+      "port": "8443",
       "transport": "xhttp",
-      "path": "/bx",
-      "tls_cert_path": "/etc/bad-proxy/certs/admin.wwr.icu.crt",
-      "tls_key_path": "/etc/bad-proxy/certs/admin.wwr.icu.key"
+      "path": "/bp"
     },
     {
       "protocol": "btp",
       "secret": "{BTP_UUID}",
       "host": "0.0.0.0",
-      "port": "8448",
-      "transport": "tls",
-      "tls_cert_path": "/etc/bad-proxy/certs/admin.wwr.icu.crt",
-      "tls_key_path": "/etc/bad-proxy/certs/admin.wwr.icu.key"
+      "port": "8444",
+      "transport": "xhttp",
+      "path": "/btp"
     }
   ],
   "outbounds": [
