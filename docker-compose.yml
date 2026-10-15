@@ -57,11 +57,16 @@ services:
     container_name: bad_proxy
     image: wwricu/bad-proxy-core:latest
     restart: always
-    expose:
-      - 8443
-      - 8444
+    # btp + vless/xhttp run on BPC's own TLS, direct on the host: Caddy cannot
+    # carry BPC's single endless duplex POST, so these do not go behind it.
+    ports:
+      - "8447:8447" # vless + xhttp, path /bx
+      - "8448:8448" # btp, raw TLS
     volumes:
-      - /data/deploy/bad_proxy/config.json:/etc/bad_proxy/config.json
+      # path matches the image CMD (/etc/bad-proxy, hyphen, not bad_proxy)
+      - /data/deploy/bad_proxy/config.json:/etc/bad-proxy/config.json:ro
+      # reuse Caddy's issued LE cert for admin.wwr.icu (read-only; container runs as root)
+      - /data/caddy/data/caddy/certificates/acme-v02.api.letsencrypt.org-directory/admin.wwr.icu:/etc/bad-proxy/certs:ro
     networks:
       - default_network
 networks:

@@ -1,20 +1,23 @@
 {
   "inbounds": [
     {
-      "protocol": "trojan",
-      "secret": "{TROJAN_UUID}",
+      "protocol": "vless",
+      "users": ["{TROJAN_UUID}"],
       "host": "0.0.0.0",
-      "port": "8443",
-      "transport": "ws",
-      "ws_path": "/bp"
+      "port": "8447",
+      "transport": "xhttp",
+      "path": "/bx",
+      "tls_cert_path": "/etc/bad-proxy/certs/admin.wwr.icu.crt",
+      "tls_key_path": "/etc/bad-proxy/certs/admin.wwr.icu.key"
     },
     {
       "protocol": "btp",
       "secret": "{BTP_UUID}",
       "host": "0.0.0.0",
-      "port": "8444",
-      "transport": "ws",
-      "ws_path": "/btp"
+      "port": "8448",
+      "transport": "tls",
+      "tls_cert_path": "/etc/bad-proxy/certs/admin.wwr.icu.crt",
+      "tls_key_path": "/etc/bad-proxy/certs/admin.wwr.icu.key"
     }
   ],
   "outbounds": [
