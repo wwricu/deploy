@@ -19,7 +19,6 @@ jobs:
           script: |
             docker pull wwricu/basic-service:latest
             docker pull wwricu/admin-page:latest
-            docker pull wwricu/blog-page:latest
             docker stop $(docker ps -aq)
             docker rm $(docker ps -aq)
             cd /data/deploy

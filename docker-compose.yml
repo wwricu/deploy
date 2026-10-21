@@ -28,19 +28,6 @@ services:
       - /data/basic-service:/data
     networks:
       - default_network
-  blog-page:
-    container_name: blog-page
-    image: wwricu/blog-page:latest
-    restart: always
-    expose:
-      - 3000
-    environment:
-      - NEXT_BASE_URL=http://basic-service:8000
-      - NEXT_SITE_URL=https://${HOSTNAME}
-      - NEXT_API_KEY_ID=${PAGE_API_KEY_ID}
-      - NEXT_API_KEY=${PAGE_API_KEY}
-    networks:
-      - default_network
   v2ray:
     container_name: v2ray
     image: v2fly/v2fly-core:latest
