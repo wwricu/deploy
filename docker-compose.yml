@@ -22,8 +22,9 @@ services:
     expose:
       - 8000
     environment:
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - CF_ACCOUNT_ID=${CF_ACCOUNT_ID}
+      - CF_KV_NAMESPACE_ID=${CF_KV_NAMESPACE_ID}
+      - CF_KV_API_TOKEN=${CF_KV_API_TOKEN}
     volumes:
       - /data/basic-service:/data
     networks:
