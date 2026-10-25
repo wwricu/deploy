@@ -1,8 +1,6 @@
-name: Dev admin snapshot
+name: Dev blog snapshot
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: [ deploy-admin-dev ]
 permissions:
   contents: read
 jobs:
@@ -15,13 +13,11 @@ jobs:
     steps:
       - uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.ADMIN_HOSTNAME }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            docker pull wwricu/admin-page:snapshot
-            docker stop caddy
-            docker rm caddy
+            docker pull wwricu/blog-page:snapshot
             cd /data/deploy
-            docker-compose -f docker-compose.yml -f docker-compose.admin.dev.yml up -d caddy
+            docker-compose -f docker-compose.yml -f docker-compose.page.dev.yml up -d blog-page
             docker image prune -f

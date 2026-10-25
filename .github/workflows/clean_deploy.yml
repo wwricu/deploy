@@ -2,9 +2,15 @@ name: Clean deploy
 on:
   workflow_call:
     secrets:
-      HOSTNAME:
+      SSH_HOST:
         required: true
-      ADMIN_HOSTNAME:
+      API_HOSTNAME:
+        required: true
+      DIRECT_HOST:
+        required: true
+      RESOURCE_HOSTNAME:
+        required: true
+      ADMIN_API_TOKEN:
         required: true
       USERNAME:
         required: true
@@ -26,7 +32,7 @@ jobs:
     steps:
       - uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.ADMIN_HOSTNAME }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
@@ -38,15 +44,17 @@ jobs:
           echo CF_ACCOUNT_ID=${{ secrets.CF_ACCOUNT_ID }} >> .env
           echo CF_KV_NAMESPACE_ID=${{ secrets.CF_KV_NAMESPACE_ID }} >> .env
           echo CF_KV_API_TOKEN=${{ secrets.CF_KV_API_TOKEN }} >> .env
-          echo HOSTNAME=${{ secrets.HOSTNAME }} >> .env
-          echo ADMIN_HOSTNAME=${{ secrets.ADMIN_HOSTNAME }} >> .env
+          echo API_HOSTNAME=${{ secrets.API_HOSTNAME }} >> .env
+          echo DIRECT_HOST=${{ secrets.DIRECT_HOST }} >> .env
+          echo NEXT_SITE_URL=https://${{ secrets.DIRECT_HOST }} >> .env
           echo RESOURCE_HOSTNAME=${{ secrets.RESOURCE_HOSTNAME }} >> .env
+          echo ADMIN_API_TOKEN=${{ secrets.ADMIN_API_TOKEN }} >> .env
           sed -i "s/{V2RAY_UUID}/${{ secrets.V2RAY_UUID }}/g" v2ray/config.json
           sed -i "s/{TROJAN_UUID}/${{ secrets.V2RAY_UUID }}/g" bad_proxy/config.json
           sed -i "s/{BTP_UUID}/${{ secrets.V2RAY_UUID }}/g" bad_proxy/config.json
       - uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.ADMIN_HOSTNAME }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           source: "."

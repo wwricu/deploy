@@ -1,0 +1,107 @@
+# Edge config for the VPS. Deployed by hand from this repository:
+#   docker compose up -d caddy          (first start)
+#   docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile   (config change)
+
+# api.wwr.icu - the only public API surface. Exactly two paths: /api/open for the blog,
+# /api/admin for the admin app. Any other path matches no route and never reaches the service.
+{$API_HOSTNAME} {
+	tls me@wwr.icu
+	encode gzip
+
+	# /api/open/* -> basic-service /open/*
+	handle /api/open/* {
+		uri strip_prefix /api
+		reverse_proxy {
+			to http://basic-service:8000
+		}
+	}
+
+	# /api/admin/* -> basic-service /admin/*. Caddy is the only process that knows the
+	# internal token, and header_up overwrites whatever the client sent, so a caller that
+	# reaches basic-service directly (blog-page on the compose network) gets a 404 here.
+	handle /api/admin/* {
+		uri strip_prefix /api
+		reverse_proxy {
+			to http://basic-service:8000
+			header_up X-Internal-Token {$ADMIN_API_TOKEN}
+		}
+	}
+
+	log {
+		format json
+		output file /var/log/caddy-api.log {
+			roll_size 10MiB
+			roll_keep 10
+		}
+	}
+}
+
+# The direct-connect host - proxy endpoints first, the blog behind everything else.
+{$DIRECT_HOST} {
+	tls me@wwr.icu
+	encode gzip
+
+	handle /gp {
+		reverse_proxy {
+			to http://v2ray:8443
+			header_up X-Real-IP {remote_host}
+		}
+	}
+
+	# bad_proxy: vless+xhttp on /bp, btp+xhttp on /btp. BPC listens plain HTTP
+	# inside the compose network; Caddy terminates TLS and streams BPC's single
+	# duplex POST with flush_interval -1. The matcher also covers the sub-path so
+	# Xray's /bp/<session-id> requests route here too (BPC matches the prefix).
+	@bp path /bp /bp/*
+	handle @bp {
+		reverse_proxy {
+			to http://bad_proxy:8443
+			flush_interval -1
+		}
+	}
+
+	@btp path /btp /btp/*
+	handle @btp {
+		reverse_proxy {
+			to http://bad_proxy:8444
+			flush_interval -1
+		}
+	}
+
+	# Anyone opening the direct host in a browser lands on the blog. It is a front for the proxy
+	# endpoints, not a site to be indexed, so the cover pages are told to stay out of search.
+	handle {
+		header X-Robots-Tag "noindex, nofollow"
+		reverse_proxy {
+			to {$BLOG_UPSTREAM:blog-page:3000}
+		}
+	}
+
+	log {
+		format json
+		output file /var/log/caddy-direct.log {
+			roll_size 10MiB
+			roll_keep 10
+		}
+	}
+}
+
+# res.wwr.icu - image redirects only. /image/* is never exposed on the api edge.
+{$RESOURCE_HOSTNAME} {
+	tls me@wwr.icu
+	encode gzip
+
+	handle /image/* {
+		reverse_proxy {
+			to http://basic-service:8000
+		}
+	}
+
+	log {
+		format json
+		output file /var/log/caddy-resource.log {
+			roll_size 10MiB
+			roll_keep 10
+		}
+	}
+}

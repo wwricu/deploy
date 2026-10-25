@@ -1,15 +1,18 @@
 services:
   caddy:
     container_name: caddy
-    image: wwricu/admin-page:latest
+    image: caddy:2-alpine
     restart: always
     volumes:
+      # The Caddyfile lives here now; admin-page is a static host and ships no edge config.
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile:ro
       - /data/caddy/data:/data/caddy
       - /data/caddy/log:/var/log
     environment:
-      - HOSTNAME=${HOSTNAME}
-      - ADMIN_HOSTNAME=${ADMIN_HOSTNAME}
+      - API_HOSTNAME=${API_HOSTNAME}
+      - DIRECT_HOST=${DIRECT_HOST}
       - RESOURCE_HOSTNAME=${RESOURCE_HOSTNAME}
+      - ADMIN_API_TOKEN=${ADMIN_API_TOKEN:?set ADMIN_API_TOKEN in .env}
     ports:
       - "443:443"
       - "80:80"
@@ -25,8 +28,21 @@ services:
       - CF_ACCOUNT_ID=${CF_ACCOUNT_ID}
       - CF_KV_NAMESPACE_ID=${CF_KV_NAMESPACE_ID}
       - CF_KV_API_TOKEN=${CF_KV_API_TOKEN}
+      - ADMIN_API_TOKEN=${ADMIN_API_TOKEN:?set ADMIN_API_TOKEN in .env}
     volumes:
       - /data/basic-service:/data
+    networks:
+      - default_network
+  blog-page:
+    container_name: blog-page
+    image: wwricu/blog-page:latest
+    restart: always
+    expose:
+      - 3000
+    environment:
+      - NEXT_BASE_URL=http://basic-service:8000
+      # canonical links; written into .env by clean_deploy.yml as https://$DIRECT_HOST
+      - NEXT_SITE_URL=${NEXT_SITE_URL}
     networks:
       - default_network
   v2ray:

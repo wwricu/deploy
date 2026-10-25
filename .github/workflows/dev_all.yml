@@ -13,16 +13,17 @@ jobs:
     steps:
       - uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.ADMIN_HOSTNAME }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             docker pull wwricu/basic-service:snapshot
-            docker pull wwricu/admin-page:snapshot
+            docker pull wwricu/blog-page:snapshot
+            docker pull caddy:2-alpine
             docker stop $(docker ps -aq)
             docker rm $(docker ps -aq)
             cd /data/deploy
             docker-compose -f docker-compose.yml \
-                           -f docker-compose.admin.dev.yml \
-                           -f docker-compose.service.dev.yml up -d
+                           -f docker-compose.service.dev.yml \
+                           -f docker-compose.page.dev.yml up -d
             docker image prune -f

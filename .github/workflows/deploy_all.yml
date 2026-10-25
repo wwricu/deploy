@@ -13,12 +13,13 @@ jobs:
     steps:
       - uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.ADMIN_HOSTNAME }}
+          host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             docker pull wwricu/basic-service:latest
-            docker pull wwricu/admin-page:latest
+            docker pull wwricu/blog-page:latest
+            docker pull caddy:2-alpine
             docker stop $(docker ps -aq)
             docker rm $(docker ps -aq)
             cd /data/deploy
