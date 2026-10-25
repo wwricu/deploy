@@ -1,13 +1,13 @@
 # deploy
 
-VPS stack: Caddy edge + basic-service + blog-page + the proxy inbounds.
+VPS stack: Caddy edge + basic-service + the proxy inbounds. The blog and the admin SPA both live on Vercel.
 
 ## Hostnames
 
 | Env var | Default use | Served by |
 | --- | --- | --- |
 | `API_HOSTNAME` | `api.wwr.icu` | Caddy: `/api/open/*` and `/api/admin/*` only |
-| `DIRECT_HOST` | the direct-connect domain (today `btp.wwr.icu`) | Caddy: `/gp`, `/bp`, `/btp` proxies, everything else → blog-page |
+| `DIRECT_HOST` | the direct-connect domain (today `btp.wwr.icu`) | Caddy: `/gp`, `/bp`, `/btp` proxies, everything else → the Vercel blog |
 | `RESOURCE_HOSTNAME` | `res.wwr.icu` | Caddy: `/image/*` only |
 | `SSH_HOST` | the VPS address used by the CI runners | not a site, just the deploy target |
 
@@ -22,9 +22,9 @@ basic-service answers on three path groups:
 
 - `/open/*` - what the blog renders. Public.
 - `/image/*` - image redirects. Public, but only exposed on `RESOURCE_HOSTNAME`.
-- `/admin/*` - login, manage, post, tag. Requires the `X-Internal-Token` header to equal `ADMIN_API_TOKEN`, and the only thing that adds that header is Caddy's `/api/admin/*` route (`header_up` replaces whatever the client sent). Requests that reach the service directly - blog-page on the compose network, or a forged path through blog-page's `/api/open/:path*` rewrite - get 404 without ever hitting a handler.
+- `/admin/*` - login, manage, post, tag. Requires the `X-Internal-Token` header to equal `ADMIN_API_TOKEN`, and the only thing that adds that header is Caddy's `/api/admin/*` route (`header_up` replaces whatever the client sent). A caller that reaches the service without going through that route - anything on the compose network, or a blog visitor trying to use blog-page's `/api/*` as a bridge - gets 404 without ever hitting a handler.
 
-`ADMIN_API_TOKEN` must therefore be set in `.env`: both the `caddy` and `basic-service` services declare it with `:?`, so `docker compose up` fails loudly instead of silently starting an unguarded or unreachable admin surface.
+`ADMIN_API_TOKEN` must therefore be set in `.env`: both the `caddy` and `basic-service` services declare it with `:?`, so `docker compose up` fails loudly instead of silently starting an unguarded or unreachable admin surface. Anything that bypasses the edge - a container on the compose network talking to `basic-service:8000` directly - is on that second door, not on the public path.
 
 ## Manual Caddy deployment
 
@@ -50,20 +50,18 @@ each other's `roll_keep`.
 
 ## The blog behind `DIRECT_HOST`
 
-The catch-all route in that site block proxies to the `blog-page` container, so the proxy domain reads as an
-ordinary blog in a browser. It is a front, not a second copy of the site: that route answers with
-`X-Robots-Tag: noindex, nofollow` to keep cover pages out of search results, and it never touches `/gp`, `/bp`
-or `/btp`.
+The catch-all route in that site block fetches the Vercel site (`https://wwr.icu`, overridable with
+`BLOG_UPSTREAM` in `.env`), so the proxy domain reads as an ordinary blog in a browser. The blog is not deployed
+here: no container, no canonical-link env, one source of truth on Vercel.
 
-The container's canonical links default to `https://${DIRECT_HOST}`; put `NEXT_SITE_URL=https://wwr.icu` in
-`.env` if you want this instance to publish the main domain's sitemap and metadata instead.
+This is a front, not a second copy of the site: that route answers with `X-Robots-Tag: noindex, nofollow` to keep
+cover pages out of search results, and it never touches `/gp`, `/bp` or `/btp`.
 
 ## CI
 
 `workflow_dispatch` only, all of them run `clean_deploy.yml` first (it rewrites `/data/deploy`, including `.env` and the Caddyfile, from the repo plus the repository secrets):
 
 - `deploy_service.yml` / `dev_service.yml` - basic-service release / snapshot
-- `deploy_blog.yml` / `dev_blog.yml` - blog-page release / snapshot
 - `deploy_proxy.yml` / `dev_proxy.yml` - bad-proxy-core release / snapshot
 - `deploy_all.yml` / `dev_all.yml` - everything at once
 - none of them touch `caddy` except `deploy_all`/`dev_all`, which recreate it as part of `up -d`

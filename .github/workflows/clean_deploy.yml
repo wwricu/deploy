@@ -46,7 +46,6 @@ jobs:
           echo CF_KV_API_TOKEN=${{ secrets.CF_KV_API_TOKEN }} >> .env
           echo API_HOSTNAME=${{ secrets.API_HOSTNAME }} >> .env
           echo DIRECT_HOST=${{ secrets.DIRECT_HOST }} >> .env
-          echo NEXT_SITE_URL=https://${{ secrets.DIRECT_HOST }} >> .env
           echo RESOURCE_HOSTNAME=${{ secrets.RESOURCE_HOSTNAME }} >> .env
           echo ADMIN_API_TOKEN=${{ secrets.ADMIN_API_TOKEN }} >> .env
           sed -i "s/{V2RAY_UUID}/${{ secrets.V2RAY_UUID }}/g" v2ray/config.json

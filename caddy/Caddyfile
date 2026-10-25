@@ -18,7 +18,7 @@
 
 	# /api/admin/* -> basic-service /admin/*. Caddy is the only process that knows the
 	# internal token, and header_up overwrites whatever the client sent, so a caller that
-	# reaches basic-service directly (blog-page on the compose network) gets a 404 here.
+	# reaches basic-service without this route gets a 404 from the service itself.
 	handle /api/admin/* {
 		uri strip_prefix /api
 		reverse_proxy {
@@ -68,12 +68,13 @@
 		}
 	}
 
-	# Anyone opening the direct host in a browser lands on the blog. It is a front for the proxy
-	# endpoints, not a site to be indexed, so the cover pages are told to stay out of search.
+	# Anyone opening the direct host in a browser lands on the blog. The blog is not deployed here -
+	# it runs on Vercel as wwr.icu - so this is a fetch through the VPS, and a front for the proxy
+	# endpoints rather than a site to be indexed.
 	handle {
 		header X-Robots-Tag "noindex, nofollow"
 		reverse_proxy {
-			to {$BLOG_UPSTREAM:blog-page:3000}
+			to {$BLOG_UPSTREAM:https://wwr.icu}
 		}
 	}
 
