@@ -1,20 +1,25 @@
 # deploy
 
-VPS stack: Caddy edge + basic-service + the proxy inbounds. The blog and the admin SPA both live on Vercel.
+VPS stack: Caddy edge + basic-service + the proxy inbounds. The blog is a Vercel-only site.
 
 ## Hostnames
 
-| Env var | Default use | Served by |
+| Env var | Value | Served by |
 | --- | --- | --- |
-| `API_HOSTNAME` | `api.wwr.icu` | Caddy: `/api/open/*` and `/api/admin/*` only |
-| `DIRECT_HOST` | the direct-connect domain (today `btp.wwr.icu`) | Caddy: `/gp`, `/bp`, `/btp` proxies, everything else → the Vercel blog |
-| `RESOURCE_HOSTNAME` | `res.wwr.icu` | Caddy: `/image/*` only |
-| `SSH_HOST` | the VPS address used by the CI runners | not a site, just the deploy target |
+| `API_HOSTNAME` | `api.wwr.icu` (Cloudflare proxied) | Caddy: `/api/open/*` and `/api/admin/*` only |
+| `DIRECT_HOST` | `btp.wwr.icu` (Cloudflare DNS-only, must point at the VPS) | Caddy: `/gp`, `/bp`, `/btp` proxies, everything else -> `https://wwr.icu` |
+| `RESOURCE_HOSTNAME` | `res.wwr.icu` (CNAME to `api.wwr.icu`) | Caddy: `/image/*` only |
+| `SSH_HOST` | the VPS address, used only as the CI ssh/scp target | not a site |
 
-`admin.wwr.icu` is gone: the admin SPA is hosted on Vercel and calls `https://api.wwr.icu/api/admin/*`. Note that
-the `/gp`, `/bp` and `/btp` inbounds used to be served on that hostname (they lived in the Caddyfile bundled with
-the `admin-page` image), so client configs still naming `admin.wwr.icu` must be re-pointed at `DIRECT_HOST` - or
-keep `admin.wwr.icu`'s DNS on this VPS until they are.
+Off this box: `wwr.icu`, `dev.wwr.icu` and `preview.wwr.icu` are the Vercel `blog-page` project,
+`devtoys.wwr.icu` is the Vercel `devtoys` project, and `admin.wwr.icu` becomes the Vercel `admin-page`
+project - it replaces `manage.wwr.icu`, which is retired. The SPA then bridges its own `/api/*` to
+`https://api.wwr.icu/api/admin/*`; nothing else of the admin app is served from the VPS.
+
+The `/gp`, `/bp` and `/btp` inbounds used to live on `admin.wwr.icu` (in the Caddyfile bundled with the
+`admin-page` image). Once that name is a CNAME to Vercel it can no longer reach this box, so client configs
+naming `admin.wwr.icu` have to be re-imported against `btp.wwr.icu` - and `btp.wwr.icu` has to exist as a
+DNS-only A record before Caddy can get a certificate for it.
 
 ## Split between open and privileged API
 
