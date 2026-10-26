@@ -16,14 +16,12 @@
 		}
 	}
 
-	# /api/admin/* -> basic-service /admin/*. Caddy is the only process that knows the
-	# internal token, and header_up overwrites whatever the client sent, so a caller that
-	# reaches basic-service without this route gets a 404 from the service itself.
+	# /api/admin/* -> basic-service /admin/*. This route is the whole boundary: no other path on
+	# this host reaches the privileged group, and the service decides by session cookie from here.
 	handle /api/admin/* {
 		uri strip_prefix /api
 		reverse_proxy {
 			to http://basic-service:8000
-			header_up X-Internal-Token {$ADMIN_API_TOKEN}
 		}
 	}
 

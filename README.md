@@ -27,9 +27,7 @@ basic-service answers on three path groups:
 
 - `/open/*` - what the blog renders. Public.
 - `/image/*` - image redirects. Public, but only exposed on `RESOURCE_HOSTNAME`.
-- `/admin/*` - login, manage, post, tag. Requires the `X-Internal-Token` header to equal `ADMIN_API_TOKEN`, and the only thing that adds that header is Caddy's `/api/admin/*` route (`header_up` replaces whatever the client sent). A caller that reaches the service without going through that route - anything on the compose network, or a blog visitor trying to use blog-page's `/api/*` as a bridge - gets 404 without ever hitting a handler.
-
-`ADMIN_API_TOKEN` must therefore be set in `.env`: both the `caddy` and `basic-service` services declare it with `:?`, so `docker compose up` fails loudly instead of silently starting an unguarded or unreachable admin surface. Anything that bypasses the edge - a container on the compose network talking to `basic-service:8000` directly - is on that second door, not on the public path.
+- `/admin/*` - login, manage, post, tag. Reachable from outside only through Caddy's `/api/admin/*` route - no other path on that host is proxied to the service at all - and inside that group the session cookie (`is_admin`) decides. There is no shared secret between Caddy and the service any more: a container on the compose network that dials `basic-service:8000` directly reaches these handlers, which is why `expose:` (never `ports:`) is what keeps that port off the host.
 
 ## Manual Caddy deployment
 
@@ -71,4 +69,4 @@ cover pages out of search results, and it never touches `/gp`, `/bp` or `/btp`.
 - `deploy_all.yml` / `dev_all.yml` - everything at once
 - none of them touch `caddy` except `deploy_all`/`dev_all`, which recreate it as part of `up -d`
 
-Required repository secrets: `SSH_HOST`, `API_HOSTNAME`, `DIRECT_HOST`, `RESOURCE_HOSTNAME`, `ADMIN_API_TOKEN`, `USERNAME`, `PRIVATE_KEY`, `V2RAY_UUID`, `CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_KV_API_TOKEN`.
+Required repository secrets: `SSH_HOST`, `API_HOSTNAME`, `DIRECT_HOST`, `RESOURCE_HOSTNAME`, `USERNAME`, `PRIVATE_KEY`, `V2RAY_UUID`, `CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_KV_API_TOKEN`.

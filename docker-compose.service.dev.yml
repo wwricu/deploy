@@ -9,7 +9,6 @@ services:
       - CF_ACCOUNT_ID=${CF_ACCOUNT_ID}
       - CF_KV_NAMESPACE_ID=${CF_KV_NAMESPACE_ID}
       - CF_KV_API_TOKEN=${CF_KV_API_TOKEN}
-      - ADMIN_API_TOKEN=${ADMIN_API_TOKEN:?set ADMIN_API_TOKEN in .env}
     volumes:
       - /data/basic-service:/data
     networks:
