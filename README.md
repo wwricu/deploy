@@ -64,9 +64,9 @@ cover pages out of search results, and it never touches `/gp`, `/bp` or `/btp`.
 
 `workflow_dispatch` only, all of them run `clean_deploy.yml` first (it rewrites `/data/deploy`, including `.env` and the Caddyfile, from the repo plus the repository secrets):
 
-- `deploy_service.yml` / `dev_service.yml` - basic-service release / snapshot
-- `deploy_proxy.yml` / `dev_proxy.yml` - bad-proxy-core release / snapshot
-- `deploy_all.yml` / `dev_all.yml` - everything at once
-- none of them touch `caddy` except `deploy_all`/`dev_all`, which recreate it as part of `up -d`
+- `deploy_service.yml` - basic-service release
+- `deploy_proxy.yml` - bad-proxy-core release
+- `deploy_all.yml` - everything at once
+- none of them touch `caddy` except `deploy_all`, which recreates it as part of `up -d`
 
 Required repository secrets: `SSH_HOST`, `API_HOSTNAME`, `DIRECT_HOST`, `RESOURCE_HOSTNAME`, `USERNAME`, `PRIVATE_KEY`, `V2RAY_UUID`, `CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_KV_API_TOKEN`.
