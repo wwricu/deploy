@@ -12,6 +12,7 @@ services:
       - API_HOSTNAME=${API_HOSTNAME}
       - DIRECT_HOST=${DIRECT_HOST}
       - RESOURCE_HOSTNAME=${RESOURCE_HOSTNAME}
+      - ADMIN_HOSTNAME=${ADMIN_HOSTNAME}
     ports:
       - "443:443"
       - "80:80"

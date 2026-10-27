@@ -7,15 +7,16 @@ VPS stack: Caddy edge + basic-service + the proxy inbounds. The blog is a Vercel
 | Env var | Value | Served by |
 | --- | --- | --- |
 | `API_HOSTNAME` | `api.wwr.icu` (Cloudflare proxied) | Caddy: `/api/open/*` and `/api/admin/*` only |
-| `DIRECT_HOST` | `btp.wwr.icu` (Cloudflare DNS-only, must point at the VPS) | Caddy: `/gp`, `/bp`, `/btp` proxies, everything else -> `https://admin.wwr.icu` |
+| `DIRECT_HOST` | `btp.wwr.icu` (Cloudflare DNS-only, must point at the VPS) | Caddy: `/gp`, `/bp`, `/btp` proxies, everything else -> `https://{$ADMIN_HOSTNAME}` |
 | `RESOURCE_HOSTNAME` | `res.wwr.icu` (CNAME to `api.wwr.icu`) | Caddy: `/image/*` only |
+| `ADMIN_HOSTNAME` | `admin.wwr.icu` (Cloudflare proxied, Vercel `admin-page`) | Caddy: the reverse-proxy target behind `DIRECT_HOST`'s catch-all |
 | `SSH_HOST` | the VPS address, used only as the CI ssh/scp target | not a site |
 
 Off this box: `wwr.icu`, `dev.wwr.icu` and `preview.wwr.icu` are the Vercel `blog-page` project,
 `devtoys.wwr.icu` is the Vercel `devtoys` project, and `admin.wwr.icu` is the Vercel `admin-page`
 project - it replaces `manage.wwr.icu`, which is retired. The SPA then bridges its own `/api/*` to
 `https://api.wwr.icu/api/admin/*`; nothing else of the admin app is served from the VPS, which only
-fetches that site as the `DIRECT_HOST` front.
+fetches that site as the `ADMIN_HOSTNAME` front behind `DIRECT_HOST`.
 
 The `/gp`, `/bp` and `/btp` inbounds used to live on `admin.wwr.icu` (in the Caddyfile bundled with the
 `admin-page` image). Once that name is a CNAME to Vercel it can no longer reach this box, so client configs
@@ -54,10 +55,10 @@ each other's `roll_keep`.
 
 ## The admin app behind `DIRECT_HOST`
 
-The catch-all route in that site block fetches the Vercel `admin-page` site (`https://admin.wwr.icu`, hardcoded
-in [`caddy/Caddyfile`](caddy/Caddyfile) - the admin app needs no secrets at the edge, so it is not a `.env` key),
+The catch-all route in that site block reverse-proxies `https://{$ADMIN_HOSTNAME}` - the Vercel `admin-page` site -
 which gives the login UI a second name that resolves straight to this box instead of only through Cloudflare.
-Nothing is deployed here: no container, one source of truth on Vercel.
+Nothing is deployed here: no container, one source of truth on Vercel. The hostname is a repository secret like the
+other three, so changing the front is a secret edit plus a redeploy, not a Caddyfile edit.
 
 The SPA keeps working behind that name because it calls relative `/api/*` and the login cookie is scoped to
 `.wwr.icu`, so `btp.wwr.icu` is same-site for `api.wwr.icu`.
@@ -75,4 +76,4 @@ a browser and now reads as an admin panel.
 - `deploy_all.yml` - everything at once
 - none of them touch `caddy` except `deploy_all`, which recreates it as part of `up -d`
 
-Required repository secrets: `SSH_HOST`, `API_HOSTNAME`, `DIRECT_HOST`, `RESOURCE_HOSTNAME`, `USERNAME`, `PRIVATE_KEY`, `V2RAY_UUID`, `CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_KV_API_TOKEN`.
+Required repository secrets: `SSH_HOST`, `API_HOSTNAME`, `DIRECT_HOST`, `RESOURCE_HOSTNAME`, `ADMIN_HOSTNAME`, `USERNAME`, `PRIVATE_KEY`, `V2RAY_UUID`, `CF_ACCOUNT_ID`, `CF_KV_NAMESPACE_ID`, `CF_KV_API_TOKEN`.
