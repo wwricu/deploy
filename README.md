@@ -7,14 +7,15 @@ VPS stack: Caddy edge + basic-service + the proxy inbounds. The blog is a Vercel
 | Env var | Value | Served by |
 | --- | --- | --- |
 | `API_HOSTNAME` | `api.wwr.icu` (Cloudflare proxied) | Caddy: `/api/open/*` and `/api/admin/*` only |
-| `DIRECT_HOST` | `btp.wwr.icu` (Cloudflare DNS-only, must point at the VPS) | Caddy: `/gp`, `/bp`, `/btp` proxies, everything else -> `https://wwr.icu` |
+| `DIRECT_HOST` | `btp.wwr.icu` (Cloudflare DNS-only, must point at the VPS) | Caddy: `/gp`, `/bp`, `/btp` proxies, everything else -> `https://admin.wwr.icu` |
 | `RESOURCE_HOSTNAME` | `res.wwr.icu` (CNAME to `api.wwr.icu`) | Caddy: `/image/*` only |
 | `SSH_HOST` | the VPS address, used only as the CI ssh/scp target | not a site |
 
 Off this box: `wwr.icu`, `dev.wwr.icu` and `preview.wwr.icu` are the Vercel `blog-page` project,
-`devtoys.wwr.icu` is the Vercel `devtoys` project, and `admin.wwr.icu` becomes the Vercel `admin-page`
+`devtoys.wwr.icu` is the Vercel `devtoys` project, and `admin.wwr.icu` is the Vercel `admin-page`
 project - it replaces `manage.wwr.icu`, which is retired. The SPA then bridges its own `/api/*` to
-`https://api.wwr.icu/api/admin/*`; nothing else of the admin app is served from the VPS.
+`https://api.wwr.icu/api/admin/*`; nothing else of the admin app is served from the VPS, which only
+fetches that site as the `DIRECT_HOST` front.
 
 The `/gp`, `/bp` and `/btp` inbounds used to live on `admin.wwr.icu` (in the Caddyfile bundled with the
 `admin-page` image). Once that name is a CNAME to Vercel it can no longer reach this box, so client configs
@@ -27,7 +28,7 @@ basic-service answers on three path groups:
 
 - `/open/*` - what the blog renders. Public.
 - `/image/*` - image redirects. Public, but only exposed on `RESOURCE_HOSTNAME`.
-- `/admin/*` - login, manage, post, tag. Reachable from outside only through Caddy's `/api/admin/*` route - no other path on that host is proxied to the service at all - and inside that group the session cookie (`is_admin`) decides. There is no shared secret between Caddy and the service any more: a container on the compose network that dials `basic-service:8000` directly reaches these handlers, which is why `expose:` (never `ports:`) is what keeps that port off the host.
+- `/admin/*` - login, manage, post, tag. Reachable from outside through Caddy's `/api/admin/*` route on `API_HOSTNAME` - no other path on that host is proxied to the service at all - and, since `DIRECT_HOST`'s catch-all fronts `admin.wwr.icu`, through that SPA's own `/api/*` bridge on the second name. Both are public URLs; inside the group the session cookie (`is_admin`) decides. There is no shared secret between Caddy and the service any more: a container on the compose network that dials `basic-service:8000` directly reaches these handlers, which is why `expose:` (never `ports:`) is what keeps that port off the host.
 
 ## Manual Caddy deployment
 
@@ -51,14 +52,19 @@ Access logs are one file per site - `/data/caddy/log` maps to `/var/log`, so the
 matter because each site block owns its own logger, and two logger instances rotating the same file step on
 each other's `roll_keep`.
 
-## The blog behind `DIRECT_HOST`
+## The admin app behind `DIRECT_HOST`
 
-The catch-all route in that site block fetches the Vercel site (`https://wwr.icu`, overridable with
-`BLOG_UPSTREAM` in `.env`), so the proxy domain reads as an ordinary blog in a browser. The blog is not deployed
-here: no container, no canonical-link env, one source of truth on Vercel.
+The catch-all route in that site block fetches the Vercel `admin-page` site (`https://admin.wwr.icu`, hardcoded
+in [`caddy/Caddyfile`](caddy/Caddyfile) - the admin app needs no secrets at the edge, so it is not a `.env` key),
+which gives the login UI a second name that resolves straight to this box instead of only through Cloudflare.
+Nothing is deployed here: no container, one source of truth on Vercel.
 
-This is a front, not a second copy of the site: that route answers with `X-Robots-Tag: noindex, nofollow` to keep
-cover pages out of search results, and it never touches `/gp`, `/bp` or `/btp`.
+The SPA keeps working behind that name because it calls relative `/api/*` and the login cookie is scoped to
+`.wwr.icu`, so `btp.wwr.icu` is same-site for `api.wwr.icu`.
+
+This is a front, not a second copy of the app: that route answers with `X-Robots-Tag: noindex, nofollow`, and it
+never touches `/gp`, `/bp` or `/btp`. The trade is the cover - the proxy domain used to read as an ordinary blog in
+a browser and now reads as an admin panel.
 
 ## CI
 

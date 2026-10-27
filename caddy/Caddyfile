@@ -66,16 +66,17 @@
 		}
 	}
 
-	# Anyone opening the direct host in a browser lands on the blog. The blog is not deployed here -
-	# it runs on Vercel as wwr.icu - so this is a fetch through the VPS, and a front for the proxy
-	# endpoints rather than a site to be indexed.
+	# Anyone opening the direct host in a browser lands on the admin app. The SPA is not deployed here -
+	# it runs on Vercel as admin.wwr.icu - so this is a fetch through the VPS, and a front for the proxy
+	# endpoints rather than a site to be indexed. It also carries the SPA's own /api/* calls, which
+	# Vercel rewrites on to api.wwr.icu/api/admin/*; that is the app's only path to the backend.
 	# header_up Host is required: reverse_proxy passes the client's Host through by default, and
 	# Cloudflare picks the site by request hostname - btp.wwr.icu is DNS-only in that zone, so a
 	# request still naming it gets refused instead of served.
 	handle {
 		header X-Robots-Tag "noindex, nofollow"
 		reverse_proxy {
-			to {$BLOG_UPSTREAM:https://wwr.icu}
+			to https://admin.wwr.icu
 			header_up Host {upstream_hostport}
 		}
 	}
