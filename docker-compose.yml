@@ -26,6 +26,10 @@ services:
     environment:
       - CF_ACCOUNT_ID=${CF_ACCOUNT_ID}
       - CF_API_TOKEN=${CF_API_TOKEN}
+      # The image on Docker Hub predates the token rename and still validates
+      # these two at import; drop both lines once the new image is released.
+      - CF_KV_NAMESPACE_ID=ab3a78fdfc804cbc86e53af6cf96e5e4
+      - CF_KV_API_TOKEN=${CF_API_TOKEN}
     volumes:
       - /data/basic-service:/data
     networks:
