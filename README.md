@@ -7,7 +7,7 @@ VPS stack: Caddy edge + basic-service + the proxy inbounds. The blog is a Vercel
 | Env var | Value | Served by |
 | --- | --- | --- |
 | `API_HOSTNAME` | `api.wwr.icu` (Cloudflare proxied) | Caddy: `/api/open/*` and `/api/admin/*` only |
-| `DIRECT_HOSTNAME` | `btp.wwr.icu` (Cloudflare DNS-only, must point at the VPS) | Caddy: `/gp`, `/bp`, `/btp`, `/h2`, `/h2t` proxies, everything else -> `https://{$ADMIN_HOSTNAME}` |
+| `DIRECT_HOSTNAME` | `btp.wwr.icu` (Cloudflare DNS-only, must point at the VPS) | Caddy: `/bp`, `/btp`, `/h2`, `/h2t` proxies, everything else -> `https://{$ADMIN_HOSTNAME}` |
 | `RESOURCE_HOSTNAME` | `res.wwr.icu` (CNAME to `api.wwr.icu`) | Caddy: `/image/*` only |
 | `ADMIN_HOSTNAME` | `admin.wwr.icu` (Cloudflare proxied, Vercel `admin-page`) | Caddy: the reverse-proxy target behind `DIRECT_HOST`'s catch-all |
 | `SSH_HOSTNAME` | the VPS address, used only as the CI ssh/scp target | not a site |
@@ -18,7 +18,7 @@ project - it replaces `manage.wwr.icu`, which is retired. The SPA then bridges i
 `https://api.wwr.icu/api/admin/*`; nothing else of the admin app is served from the VPS, which only
 fetches that site as the `ADMIN_HOSTNAME` front behind `DIRECT_HOSTNAME`.
 
-The `/gp`, `/bp`, `/btp`, `/h2` and `/h2t` inbounds used to live on `admin.wwr.icu` (in the Caddyfile bundled with the
+The `/bp`, `/btp`, `/h2` and `/h2t` inbounds used to live on `admin.wwr.icu` (in the Caddyfile bundled with the
 `admin-page` image). Once that name is a CNAME to Vercel it can no longer reach this box, so client configs
 naming `admin.wwr.icu` have to be re-imported against `btp.wwr.icu` - and `btp.wwr.icu` has to exist as a
 DNS-only A record before Caddy can get a certificate for it.
@@ -64,7 +64,7 @@ The SPA keeps working behind that name because it calls relative `/api/*` and th
 `.wwr.icu`, so `btp.wwr.icu` is same-site for `api.wwr.icu`.
 
 This is a front, not a second copy of the app: that route answers with `X-Robots-Tag: noindex, nofollow`, and it
-never touches `/gp`, `/bp`, `/btp`, `/h2` or `/h2t`. The trade is the cover - the proxy domain used to read as an ordinary blog in
+never touches `/bp`, `/btp`, `/h2` or `/h2t`. The trade is the cover - the proxy domain used to read as an ordinary blog in
 a browser and now reads as an admin panel.
 
 ## CI
@@ -78,6 +78,5 @@ a browser and now reads as an admin panel.
 
 Required repository secrets: `SSH_HOSTNAME`, `API_HOSTNAME`, `DIRECT_HOSTNAME`, `RESOURCE_HOSTNAME`, `ADMIN_HOSTNAME`, `USERNAME`, `PRIVATE_KEY`, `VLESS_SECRET`, `PROXY_SECRET`, `BTP_SECRET`, `CF_ACCOUNT_ID`, `CF_API_TOKEN`.
 
-`VLESS_SECRET` is the vless uuid (16 raw bytes, dashes optional), `PROXY_SECRET` the trojan password shared by v2ray's `/gp` and BPC's `/h2t`, `BTP_SECRET` the btp secret on `/btp`.
+`VLESS_SECRET` is the vless uuid (16 raw bytes, dashes optional), `PROXY_SECRET` the trojan password on `/h2t`, `BTP_SECRET` the btp secret on `/btp`.
 
-The v2ray service is a temporary fallback for clients whose Xray build predates BPC's transports; the service goes away once every client speaks xhttp or http2.
