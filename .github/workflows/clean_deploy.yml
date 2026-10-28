@@ -16,7 +16,11 @@ on:
         required: true
       PRIVATE_KEY:
         required: true
+      VLESS_SECRET:
+        required: true
       PROXY_SECRET:
+        required: true
+      BTP_SECRET:
         required: true
       CF_ACCOUNT_ID:
         required: true
@@ -45,8 +49,15 @@ jobs:
           echo DIRECT_HOSTNAME=${{ secrets.DIRECT_HOSTNAME }} >> .env
           echo RESOURCE_HOSTNAME=${{ secrets.RESOURCE_HOSTNAME }} >> .env
           echo ADMIN_HOSTNAME=${{ secrets.ADMIN_HOSTNAME }} >> .env
-          sed -i "s/{VLESS_SECRET}/${{ secrets.PROXY_SECRET }}/g" bad_proxy/config.json
-          sed -i "s/{BTP_SECRET}/${{ secrets.PROXY_SECRET }}/g" bad_proxy/config.json
+          sed -i "s/{VLESS_SECRET}/${{ secrets.VLESS_SECRET }}/g" bad_proxy/config.json
+          sed -i "s/{PROXY_SECRET}/${{ secrets.PROXY_SECRET }}/g" bad_proxy/config.json v2ray/config.json
+          sed -i "s/{BTP_SECRET}/${{ secrets.BTP_SECRET }}/g" bad_proxy/config.json
+          # BPC parses vless ids as 16 raw bytes; a non-uuid secret makes the
+          # container exit at startup, so fail here while nothing is deployed.
+          id=$(sed -n 's/.*"users": \["\([^"]*\)"\].*/\1/p' bad_proxy/config.json | head -1 | tr -d '-')
+          [ ${#id} -eq 32 ] || { echo "VLESS_SECRET is not a 16-byte uuid"; exit 1; }
+          python3 -m json.tool bad_proxy/config.json > /dev/null
+          python3 -m json.tool v2ray/config.json > /dev/null
       - uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.SSH_HOSTNAME }}

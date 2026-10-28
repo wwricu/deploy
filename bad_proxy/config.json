@@ -13,6 +13,20 @@
       "host": "0.0.0.0",
       "port": "8444",
       "transport": { "type": "xhttp", "path": "/btp" }
+    },
+    {
+      "protocol": "vless",
+      "users": ["{VLESS_SECRET}"],
+      "host": "0.0.0.0",
+      "port": "8445",
+      "transport": { "type": "http2", "path": "/h2" }
+    },
+    {
+      "protocol": "trojan",
+      "secret": "{PROXY_SECRET}",
+      "host": "0.0.0.0",
+      "port": "8446",
+      "transport": { "type": "http2", "path": "/h2t" }
     }
   ],
   "outbounds": [

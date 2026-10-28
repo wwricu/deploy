@@ -18,7 +18,9 @@ jobs:
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
             docker pull wwricu/basic-service:latest
+            docker pull wwricu/bad-proxy-core:latest
             docker pull caddy:2-alpine
+            docker pull v2fly/v2fly-core:latest
             docker stop $(docker ps -aq)
             docker rm $(docker ps -aq)
             cd /data/deploy
