@@ -2,14 +2,14 @@
   "inbounds": [
     {
       "protocol": "vless",
-      "users": ["{TROJAN_UUID}"],
+      "users": ["{VLESS_SECRET}"],
       "host": "0.0.0.0",
       "port": "8443",
       "transport": { "type": "xhttp", "path": "/bp" }
     },
     {
       "protocol": "btp",
-      "secret": "{BTP_UUID}",
+      "secret": "{BTP_SECRET}",
       "host": "0.0.0.0",
       "port": "8444",
       "transport": { "type": "xhttp", "path": "/btp" }

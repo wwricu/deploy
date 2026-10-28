@@ -1,14 +1,7 @@
-# Edge config for the VPS. Deployed by hand from this repository:
-#   docker compose up -d caddy          (first start)
-#   docker compose exec caddy caddy reload --config /etc/caddy/Caddyfile   (config change)
-
-# api.wwr.icu - the only public API surface. Exactly two paths: /api/open for the blog,
-# /api/admin for the admin app. Any other path matches no route and never reaches the service.
 {$API_HOSTNAME} {
 	tls me@wwr.icu
 	encode gzip
 
-	# /api/open/* -> basic-service /open/*
 	handle /api/open/* {
 		uri strip_prefix /api
 		reverse_proxy {
@@ -16,8 +9,6 @@
 		}
 	}
 
-	# /api/admin/* -> basic-service /admin/*. This route is the whole boundary: no other path on
-	# this host reaches the privileged group, and the service decides by session cookie from here.
 	handle /api/admin/* {
 		uri strip_prefix /api
 		reverse_proxy {
@@ -34,8 +25,7 @@
 	}
 }
 
-# The direct-connect host - proxy endpoints first, the front site behind everything else.
-{$DIRECT_HOST} {
+{$DIRECT_HOSTNAME} {
 	tls me@wwr.icu
 	encode gzip
 
@@ -46,10 +36,6 @@
 		}
 	}
 
-	# bad_proxy: vless+xhttp on /bp, btp+xhttp on /btp. BPC listens plain HTTP
-	# inside the compose network; Caddy terminates TLS and streams BPC's single
-	# duplex POST with flush_interval -1. The matcher also covers the sub-path so
-	# Xray's /bp/<session-id> requests route here too (BPC matches the prefix).
 	@bp path /bp /bp/*
 	handle @bp {
 		reverse_proxy {
@@ -66,9 +52,6 @@
 		}
 	}
 
-	# header_up Host is required: reverse_proxy passes the client's Host through by default, and
-	# Cloudflare picks the site by request hostname - btp.wwr.icu is DNS-only in that zone, so a
-	# request still naming it gets refused instead of served.
 	handle {
 		header X-Robots-Tag "noindex, nofollow"
 		reverse_proxy {
@@ -86,7 +69,6 @@
 	}
 }
 
-# res.wwr.icu - image redirects only. /image/* is never exposed on the api edge.
 {$RESOURCE_HOSTNAME} {
 	tls me@wwr.icu
 	encode gzip
