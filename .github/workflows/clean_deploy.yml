@@ -18,8 +18,6 @@ on:
         required: true
       PROXY_SECRET:
         required: true
-      BTP_SECRET:
-        required: true
       CF_ACCOUNT_ID:
         required: true
       CF_API_TOKEN:
