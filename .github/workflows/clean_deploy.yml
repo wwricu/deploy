@@ -16,8 +16,6 @@ on:
         required: true
       PRIVATE_KEY:
         required: true
-      VLESS_SECRET:
-        required: true
       PROXY_SECRET:
         required: true
       BTP_SECRET:
@@ -49,13 +47,13 @@ jobs:
           echo DIRECT_HOSTNAME=${{ secrets.DIRECT_HOSTNAME }} >> .env
           echo RESOURCE_HOSTNAME=${{ secrets.RESOURCE_HOSTNAME }} >> .env
           echo ADMIN_HOSTNAME=${{ secrets.ADMIN_HOSTNAME }} >> .env
-          sed -i "s/{VLESS_SECRET}/${{ secrets.VLESS_SECRET }}/g" bad_proxy/config.json
           sed -i "s/{PROXY_SECRET}/${{ secrets.PROXY_SECRET }}/g" bad_proxy/config.json
           sed -i "s/{BTP_SECRET}/${{ secrets.BTP_SECRET }}/g" bad_proxy/config.json
           # BPC parses vless ids as 16 raw bytes; a non-uuid secret makes the
           # container exit at startup, so fail here while nothing is deployed.
+          # VLESS and Trojan share PROXY_SECRET, so this checks that one value.
           id=$(sed -n 's/.*"users": \["\([^"]*\)"\].*/\1/p' bad_proxy/config.json | head -1 | tr -d '-')
-          [ ${#id} -eq 32 ] || { echo "VLESS_SECRET is not a 16-byte uuid"; exit 1; }
+          [ ${#id} -eq 32 ] || { echo "PROXY_SECRET is not a 16-byte uuid"; exit 1; }
           python3 -m json.tool bad_proxy/config.json > /dev/null
       - uses: appleboy/scp-action@master
         with:

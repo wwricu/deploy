@@ -2,7 +2,7 @@
   "inbounds": [
     {
       "protocol": "vless",
-      "users": ["{VLESS_SECRET}"],
+      "users": ["{PROXY_SECRET}"],
       "host": "0.0.0.0",
       "port": "8443",
       "transport": { "type": "xhttp", "path": "/bp" }
@@ -16,7 +16,7 @@
     },
     {
       "protocol": "vless",
-      "users": ["{VLESS_SECRET}"],
+      "users": ["{PROXY_SECRET}"],
       "host": "0.0.0.0",
       "port": "8445",
       "transport": { "type": "http2", "path": "/h2" }

@@ -76,7 +76,7 @@ a browser and now reads as an admin panel.
 - `deploy_all.yml` - everything at once
 - none of them touch `caddy` except `deploy_all`, which recreates it as part of `up -d`
 
-Required repository secrets: `SSH_HOSTNAME`, `API_HOSTNAME`, `DIRECT_HOSTNAME`, `RESOURCE_HOSTNAME`, `ADMIN_HOSTNAME`, `USERNAME`, `PRIVATE_KEY`, `VLESS_SECRET`, `PROXY_SECRET`, `BTP_SECRET`, `CF_ACCOUNT_ID`, `CF_API_TOKEN`.
+Required repository secrets: `SSH_HOSTNAME`, `API_HOSTNAME`, `DIRECT_HOSTNAME`, `RESOURCE_HOSTNAME`, `ADMIN_HOSTNAME`, `USERNAME`, `PRIVATE_KEY`, `PROXY_SECRET`, `BTP_SECRET`, `CF_ACCOUNT_ID`, `CF_API_TOKEN`.
 
-`VLESS_SECRET` is the vless uuid (16 raw bytes, dashes optional), `PROXY_SECRET` the trojan password on `/h2t`, `BTP_SECRET` the btp secret on `/btp`.
+`PROXY_SECRET` is the uuid the vless inbounds on `/bp` and `/h2` carry and the trojan password on `/h2t` (16 raw bytes, dashes optional), `BTP_SECRET` the btp secret on `/btp`.
 
