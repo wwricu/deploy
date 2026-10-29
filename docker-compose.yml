@@ -34,12 +34,10 @@ services:
     container_name: bad_proxy
     image: wwricu/bad-proxy-core:latest
     restart: always
-    # BPC runs plain HTTP on the compose network; only Caddy terminates TLS.
     expose:
-      - 8443 # vless + xhttp, path /bp
-      - 8444 # btp + xhttp, path /btp
-      - 8445 # vless + http2 (Xray network "http"), path /h2
-      - 8446 # trojan + http2, path /h2t
+      - 8443
+      - 8444
+      - 8445
     volumes:
       - /data/deploy/bad_proxy/config.json:/etc/bad-proxy/config.json:ro
     networks:

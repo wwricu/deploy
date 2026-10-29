@@ -9,7 +9,7 @@
     },
     {
       "protocol": "btp",
-      "secret": "{BTP_SECRET}",
+      "secret": "{PROXY_SECRET}",
       "host": "0.0.0.0",
       "port": "8444",
       "transport": { "type": "xhttp", "path": "/btp" }
@@ -20,13 +20,6 @@
       "host": "0.0.0.0",
       "port": "8445",
       "transport": { "type": "http2", "path": "/h2" }
-    },
-    {
-      "protocol": "trojan",
-      "secret": "{PROXY_SECRET}",
-      "host": "0.0.0.0",
-      "port": "8446",
-      "transport": { "type": "http2", "path": "/h2t" }
     }
   ],
   "outbounds": [

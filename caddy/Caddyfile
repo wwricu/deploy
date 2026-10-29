@@ -45,8 +45,6 @@
 		}
 	}
 
-	# Xray's network "http": the client speaks h2 to Caddy, Caddy forwards the
-	# single duplex PUT as HTTP/1.1 - BPC accepts both on the same listener.
 	@h2 path /h2 /h2/*
 	handle @h2 {
 		reverse_proxy {
