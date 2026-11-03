@@ -64,7 +64,7 @@ services:
       - 8451
     volumes:
       - /data/deploy/xray/config.json:/etc/xray/config.json:ro
-    entrypoint: ["xray"]
+    entrypoint: ["v2ray"]
     command: ["-c", "/etc/xray/config.json"]
     networks:
       - default_network
