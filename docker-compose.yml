@@ -52,7 +52,7 @@ services:
       - 80
     volumes:
       - /data/probe:/www:ro
-    command: ["httpd", "-f", "-p", "80", "-h", "/www"]
+    command: ["busybox", "httpd", "-f", "-p", "80", "-h", "/www"]
     networks:
       - default_network
   xray_probe:
