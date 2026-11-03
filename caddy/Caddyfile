@@ -53,14 +53,6 @@
 		}
 	}
 
-	@h2t path /h2t /h2t/*
-	handle @h2t {
-		reverse_proxy {
-			to http://bad_proxy:8446
-			flush_interval -1
-		}
-	}
-
 	handle {
 		header X-Robots-Tag "noindex, nofollow"
 		reverse_proxy {
