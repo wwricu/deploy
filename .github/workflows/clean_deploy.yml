@@ -46,6 +46,7 @@ jobs:
           echo RESOURCE_HOSTNAME=${{ secrets.RESOURCE_HOSTNAME }} >> .env
           echo ADMIN_HOSTNAME=${{ secrets.ADMIN_HOSTNAME }} >> .env
           sed -i "s/{PROXY_SECRET}/${{ secrets.PROXY_SECRET }}/g" bad_proxy/config.json
+          sed -i "s/{PROXY_SECRET}/${{ secrets.PROXY_SECRET }}/g" xray/config.json
           id=$(sed -n 's/.*"users": \["\([^"]*\)"\].*/\1/p' bad_proxy/config.json | head -1 | tr -d '-')
           [ ${#id} -eq 32 ] || { echo "PROXY_SECRET is not a 16-byte uuid"; exit 1; }
           python3 -m json.tool bad_proxy/config.json > /dev/null

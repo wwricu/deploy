@@ -1,0 +1,23 @@
+{
+  "log": { "loglevel": "warning" },
+  "inbounds": [
+    {
+      "tag": "probe-h2",
+      "port": 8450,
+      "protocol": "vless",
+      "settings": {
+        "clients": [ { "id": "{PROXY_SECRET}", "encryption": "none" } ],
+        "decryption": "none"
+      },
+      "streamSettings": { "network": "h2", "h2Settings": { "path": "/xh2" } }
+    },
+    {
+      "tag": "probe-ws",
+      "port": 8451,
+      "protocol": "trojan",
+      "settings": { "clients": [ { "password": "{PROXY_SECRET}" } ] },
+      "streamSettings": { "network": "ws", "wsSettings": { "path": "/xws" } }
+    }
+  ],
+  "outbounds": [ { "protocol": "freedom", "tag": "direct" } ]
+}

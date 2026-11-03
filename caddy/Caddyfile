@@ -53,6 +53,50 @@
 		}
 	}
 
+	# Dev-only probes. Same object, same edge, same TLS: the only differences are
+	# whether the request is tunneled, which transport carries it, and which
+	# implementation terminates it. Nothing here is on the master routes.
+
+	# Local origin, no proxy hop at all: what the edge and the last mile can do.
+	@probe path /probe /probe/*
+	handle @probe {
+		uri strip_prefix /probe
+		header Content-Type "application/octet-stream"
+		reverse_proxy {
+			to http://probe:80
+			flush_interval -1
+		}
+	}
+
+	# BPC's inbound 8445 reached over h2c instead of h1: exercises the core's real
+	# HTTP/2 branch end to end, which the master /h2 route never does.
+	@h2c path /h2c /h2c/*
+	handle @h2c {
+		uri replace /h2c /h2
+		reverse_proxy {
+			to h2c://bad_proxy:8445
+			flush_interval -1
+		}
+	}
+
+	# v2fly as the server, over h2c and over ws: the implementation and transport
+	# the router used before this stack.
+	@xh2 path /xh2 /xh2/*
+	handle @xh2 {
+		reverse_proxy {
+			to h2c://xray_probe:8450
+			flush_interval -1
+		}
+	}
+
+	@xws path /xws /xws/*
+	handle @xws {
+		reverse_proxy {
+			to http://xray_probe:8451
+			flush_interval -1
+		}
+	}
+
 	handle {
 		header X-Robots-Tag "noindex, nofollow"
 		reverse_proxy {
