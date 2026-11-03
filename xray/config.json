@@ -6,7 +6,7 @@
       "port": 8450,
       "protocol": "vless",
       "settings": {
-        "clients": [ { "id": "{PROXY_SECRET}", "encryption": "none" } ],
+        "clients": [ { "id": "{PROXY_SECRET}" } ],
         "decryption": "none"
       },
       "streamSettings": { "network": "h2", "h2Settings": { "path": "/xh2" } }
