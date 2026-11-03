@@ -43,16 +43,17 @@ services:
     networks:
       - default_network
   # Dev-only: local origin for throughput measurements, and v2fly as a reference
-  # server. Neither is reachable on any master route.
+  # server. Neither is reachable on any master route. python is already on the
+  # box; alpine's busybox has no httpd applet.
   probe:
     container_name: probe
-    image: alpine:latest
+    image: python:3.12-alpine
     restart: always
     expose:
       - 80
     volumes:
       - /data/probe:/www:ro
-    command: ["busybox", "httpd", "-f", "-p", "80", "-h", "/www"]
+    command: ["python3", "-m", "http.server", "--bind", "0.0.0.0", "--dir", "/www", "80"]
     networks:
       - default_network
   xray_probe:
@@ -65,7 +66,7 @@ services:
     volumes:
       - /data/deploy/xray/config.json:/etc/xray/config.json:ro
     entrypoint: ["v2ray"]
-    command: ["-c", "/etc/xray/config.json"]
+    command: ["run", "-c", "/etc/xray/config.json"]
     networks:
       - default_network
 networks:
