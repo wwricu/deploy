@@ -13,8 +13,9 @@
         "network": "ws",
         "security": "tls",
         "tlsSettings": {
-          "certFile": "/etc/xray/ref.crt",
-          "keyFile": "/etc/xray/ref.key",
+          "certificates": [
+            { "certificateFile": "/etc/xray/ref.crt", "keyFile": "/etc/xray/ref.key" }
+          ],
           "alpn": [ "http/1.1" ]
         },
         "wsSettings": { "path": "/xws" }
