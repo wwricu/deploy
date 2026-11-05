@@ -14,8 +14,11 @@
     {
       "tag": "probe-ws",
       "port": 8451,
-      "protocol": "trojan",
-      "settings": { "clients": [ { "password": "{PROXY_SECRET}" } ] },
+      "protocol": "vless",
+      "settings": {
+        "clients": [ { "id": "{PROXY_SECRET}" } ],
+        "decryption": "none"
+      },
       "streamSettings": { "network": "ws", "wsSettings": { "path": "/xws" } }
     }
   ],
