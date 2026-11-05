@@ -2,24 +2,23 @@
   "log": { "loglevel": "warning" },
   "inbounds": [
     {
-      "tag": "probe-h2",
-      "port": 8450,
+      "tag": "ref-ws",
+      "port": 18443,
       "protocol": "vless",
       "settings": {
         "clients": [ { "id": "{PROXY_SECRET}" } ],
         "decryption": "none"
       },
-      "streamSettings": { "network": "h2", "h2Settings": { "path": "/xh2" } }
-    },
-    {
-      "tag": "probe-ws",
-      "port": 8451,
-      "protocol": "vless",
-      "settings": {
-        "clients": [ { "id": "{PROXY_SECRET}" } ],
-        "decryption": "none"
-      },
-      "streamSettings": { "network": "ws", "wsSettings": { "path": "/xws" } }
+      "streamSettings": {
+        "network": "ws",
+        "security": "tls",
+        "tlsSettings": {
+          "certFile": "/etc/xray/ref.crt",
+          "keyFile": "/etc/xray/ref.key",
+          "alpn": [ "http/1.1" ]
+        },
+        "wsSettings": { "path": "/xws" }
+      }
     }
   ],
   "outbounds": [ { "protocol": "freedom", "tag": "direct" } ]
