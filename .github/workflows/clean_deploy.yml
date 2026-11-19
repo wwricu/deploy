@@ -34,9 +34,8 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.PRIVATE_KEY }}
           script: |
-            mkdir /data
-            rm -rf /data/deploy
-            mkdir /data/deploy
+            mkdir -p /data/deploy
+            find /data/deploy -mindepth 1 -delete
       - uses: actions/checkout@v4
       - run: |
           echo CF_ACCOUNT_ID=${{ secrets.CF_ACCOUNT_ID }} >> .env

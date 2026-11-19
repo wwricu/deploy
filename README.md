@@ -80,3 +80,27 @@ Required repository secrets: `SSH_HOSTNAME`, `API_HOSTNAME`, `DIRECT_HOSTNAME`, 
 
 `PROXY_SECRET` is the uuid the vless inbounds on `/bp` and `/h2` carry and the trojan password on `/h2t` (16 raw bytes, dashes optional), `BTP_SECRET` the btp secret on `/btp`.
 
+## Deploy account
+
+CI logs in as `wwr`, not `root`. Two facts make that enough: `wwr` is in the `docker` group, which is what
+`docker compose` needs, and `clean_deploy.yml` only ever writes *inside* `/data/deploy` - it clears the contents with
+`find /data/deploy -mindepth 1 -delete` rather than deleting the directory, so the ownership set below survives every
+deploy and nothing in the pipeline needs write access to `/data` itself.
+
+Switching over takes two repository secrets and one root command:
+
+1. `USERNAME` = `wwr`, and `PRIVATE_KEY` = a key whose public half is appended to `~wwr/.ssh/authorized_keys`
+   (that file is `wwr`-owned, so no root needed to add it).
+2. As `root`, once: `mkdir -p /data/deploy && chown -R wwr:wwr /data/deploy`. This also retires the uid `1001`
+   files the old root login left behind - those came from the runner's user id being preserved when root untarred.
+
+`/data/caddy` and `/data/basic-service` stay `root`-owned on purpose: the containers write them as root, and the host
+only reads them (`755`). Keeping them out of `/data/deploy` is what protects the certificates and the database from
+the deploy-time wipe above.
+
+Once a `deploy_all` run has succeeded under the new account, `PermitRootLogin no` can be set in
+`/etc/ssh/sshd_config` (`PasswordAuthentication` is already `no`); `sudo` still covers the two cases above
+interactively. One failure mode to know: if a bind mount source is ever misspelled, Docker creates the missing path
+as a **root-owned directory** inside `/data/deploy`, and the next `find -delete` stops with Permission denied. That
+needs a root cleanup of the stray directory, not another `chown`.
+
