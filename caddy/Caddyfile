@@ -2,6 +2,12 @@
 	tls me@wwr.icu
 	encode gzip
 
+	handle /open/* /admin/* {
+		reverse_proxy {
+			to http://basic-service:8000
+		}
+	}
+
 	handle /api/open/* {
 		uri strip_prefix /api
 		reverse_proxy {
