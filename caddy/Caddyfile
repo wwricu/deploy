@@ -8,20 +8,6 @@
 		}
 	}
 
-	handle /api/open/* {
-		uri strip_prefix /api
-		reverse_proxy {
-			to http://basic-service:8000
-		}
-	}
-
-	handle /api/admin/* {
-		uri strip_prefix /api
-		reverse_proxy {
-			to http://basic-service:8000
-		}
-	}
-
 	log {
 		format json
 		output file /var/log/caddy-api.log {

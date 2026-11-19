@@ -6,7 +6,7 @@ VPS stack: Caddy edge + basic-service + the proxy inbounds. The blog is a Vercel
 
 | Env var | Value | Served by |
 | --- | --- | --- |
-| `API_HOSTNAME` | `api.wwr.icu` (Cloudflare proxied) | Caddy: `/api/open/*` and `/api/admin/*` only |
+| `API_HOSTNAME` | `api.wwr.icu` (Cloudflare proxied) | Caddy: `/open/*` and `/admin/*` only |
 | `DIRECT_HOSTNAME` | `btp.wwr.icu` (Cloudflare DNS-only, must point at the VPS) | Caddy: `/bp`, `/btp`, `/h2`, `/h2t` proxies, everything else -> `https://{$ADMIN_HOSTNAME}` |
 | `RESOURCE_HOSTNAME` | `res.wwr.icu` (CNAME to `api.wwr.icu`) | Caddy: `/image/*` only |
 | `ADMIN_HOSTNAME` | `admin.wwr.icu` (Cloudflare proxied, Vercel `admin-page`) | Caddy: the reverse-proxy target behind `DIRECT_HOST`'s catch-all |
@@ -15,7 +15,7 @@ VPS stack: Caddy edge + basic-service + the proxy inbounds. The blog is a Vercel
 Off this box: `wwr.icu`, `dev.wwr.icu` and `preview.wwr.icu` are the Vercel `blog-page` project,
 `devtoys.wwr.icu` is the Vercel `devtoys` project, and `admin.wwr.icu` is the Vercel `admin-page`
 project - it replaces `manage.wwr.icu`, which is retired. The SPA then bridges its own `/api/*` to
-`https://api.wwr.icu/api/admin/*`; nothing else of the admin app is served from the VPS, which only
+`https://api.wwr.icu/admin/*`; nothing else of the admin app is served from the VPS, which only
 fetches that site as the `ADMIN_HOSTNAME` front behind `DIRECT_HOSTNAME`.
 
 The `/bp`, `/btp`, `/h2` and `/h2t` inbounds used to live on `admin.wwr.icu` (in the Caddyfile bundled with the
@@ -29,7 +29,7 @@ basic-service answers on three path groups:
 
 - `/open/*` - what the blog renders. Public.
 - `/image/*` - image redirects. Public, but only exposed on `RESOURCE_HOSTNAME`.
-- `/admin/*` - login, manage, post, tag. Reachable from outside through Caddy's `/api/admin/*` route on `API_HOSTNAME` - no other path on that host is proxied to the service at all - and, since `DIRECT_HOST`'s catch-all fronts `admin.wwr.icu`, through that SPA's own `/api/*` bridge on the second name. Both are public URLs; inside the group the session cookie (`is_admin`) decides. There is no shared secret between Caddy and the service any more: a container on the compose network that dials `basic-service:8000` directly reaches these handlers, which is why `expose:` (never `ports:`) is what keeps that port off the host.
+- `/admin/*` - login, manage, post, tag. Reachable from outside through Caddy's `/admin/*` route on `API_HOSTNAME` - no other path on that host is proxied to the service at all - and, since `DIRECT_HOST`'s catch-all fronts `admin.wwr.icu`, through that SPA's own `/api/*` bridge on the second name. Both are public URLs; inside the group the session cookie (`is_admin`) decides. There is no shared secret between Caddy and the service any more: a container on the compose network that dials `basic-service:8000` directly reaches these handlers, which is why `expose:` (never `ports:`) is what keeps that port off the host.
 
 ## Manual Caddy deployment
 
