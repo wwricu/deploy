@@ -9,6 +9,10 @@
 		}
 	}
 
+	handle {
+		respond 404
+	}
+
 	log {
 		format json
 		output file /var/log/caddy-api.log {
@@ -71,6 +75,10 @@
 		reverse_proxy {
 			to http://basic-service:8000
 		}
+	}
+
+	handle {
+		respond 404
 	}
 
 	log {
