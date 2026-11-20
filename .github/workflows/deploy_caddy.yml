@@ -1,0 +1,26 @@
+name: Deploy caddy
+on:
+  workflow_dispatch:
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+permissions:
+  contents: read
+jobs:
+  reset:
+    uses: ./.github/workflows/clean_deploy.yml
+    secrets: inherit
+  deploy:
+    runs-on: ubuntu-latest
+    needs: reset
+    steps:
+      - uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOSTNAME }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.PRIVATE_KEY }}
+          script: |
+            cd /data/deploy
+            docker run --rm --env-file .env -v "$PWD/caddy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+              caddy:2-alpine validate --config /etc/caddy/Caddyfile
+            docker-compose -f docker-compose.yml up -d --force-recreate caddy
